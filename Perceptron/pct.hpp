@@ -4,16 +4,22 @@
 
 class layer {
 private:
-	std::vector<int> input;
-	std::vector<int> output;
+	std::vector<double> input;
+	std::vector<double> output;
 	std::vector<double> weight;
+	
+	std::vector<double> delta;
+	std::vector<double> dweight;
 public:
 	layer() {};
 	layer(int,int);
 	int setSize(int,int);
 	
-	int step(int, double);
+	double step(double);
+	double sigmoid(double);
 	
-	int update(std::vector<int>);
-	int train(std::vector<int>, std::vector<int>, double);
+	int update(std::vector<double>);
+	int updateBP(std::vector<double>);
+	int train(std::vector<double>, std::vector<double>, double);
+	int trainBP(std::vector<double>, std::vector<double>, double);
 };

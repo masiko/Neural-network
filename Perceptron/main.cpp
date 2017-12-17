@@ -9,7 +9,7 @@
 #define OUT_DIM			(1)
 #define ETA				(0.1)
 
-int setTrainData(char fname[], int n, std::vector<int> &d) {
+int setTrainData(char fname[], int n, std::vector<double> &d) {
 	std::ifstream ifs(fname);
 	std::string str;
 	
@@ -18,7 +18,7 @@ int setTrainData(char fname[], int n, std::vector<int> &d) {
 	for (int c=0; c<n; c++) {
 		std::cout<<"c="<<c<<", ";
 		std::getline(ifs, str);
-		std::sscanf(str.data(), "%d %d %d %d %d %d %d %d %d %d %d %d",
+		std::sscanf(str.data(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 					 &d[MAX_DATA_DIM*c+0], &d[MAX_DATA_DIM*c+1], &d[MAX_DATA_DIM*c+2], &d[MAX_DATA_DIM*c+3],
 					 &d[MAX_DATA_DIM*c+4], &d[MAX_DATA_DIM*c+5], &d[MAX_DATA_DIM*c+6], &d[MAX_DATA_DIM*c+7],
 					 &d[MAX_DATA_DIM*c+8], &d[MAX_DATA_DIM*c+9], &d[MAX_DATA_DIM*c+10], &d[MAX_DATA_DIM*c+11]);
@@ -27,17 +27,17 @@ int setTrainData(char fname[], int n, std::vector<int> &d) {
 			std::cout<<d[MAX_DATA_DIM*c+e]<<",";
 		}
 		std::cout<<std::endl;
+		//debag message end
 	}
-	//debag message end
 	return 0;
 }
 
 int main() {
 	layer perceptron(VEC_DIM, OUT_DIM);
-	std::vector<int> buff_x;
-	std::vector<int> buff_y;
-	std::vector<int> x;
-	std::vector<int> y;
+	std::vector<double> buff_x;
+	std::vector<double> buff_y;
+	std::vector<double> x;
+	std::vector<double> y;
 	buff_x.resize(TRAIN_DATA_SIZE*MAX_DATA_DIM);
 	buff_y.resize(TRAIN_DATA_SIZE*MAX_DATA_DIM);
 	x.resize(VEC_DIM);
@@ -59,7 +59,7 @@ int main() {
 				y[e] = buff_y[MAX_DATA_DIM*d + e];
 				std::cout<<y[e]<<",";
 			}
-			perceptron.train(x, y, ETA);
+			perceptron.trainBP(x, y, ETA);
 		}
 	}
 	return 0;
