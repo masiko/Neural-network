@@ -4,7 +4,7 @@
 #define TRAIN_DATA_SIZE (4)
 #define VEC_SIZE        (3)
 
-Reference source: https://qiita.com/murataR/items/74a3a89ffcccb688d71f
+//Reference source: https://qiita.com/murataR/items/74a3a89ffcccb688d71f
 
 int dot(int size, int v0[], double v1[]) {
 	int c = 0;
