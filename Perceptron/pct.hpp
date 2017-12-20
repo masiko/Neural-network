@@ -15,11 +15,17 @@ public:
 	layer(int,int);
 	int setSize(int,int);
 	
+	int getWeight(std::vector<double>);
+	int getDelta(std::vector<double>);
+	int getOutput(std::vector<double>);
+	
 	double step(double);
 	double sigmoid(double);
 	
 	int update(std::vector<double>);
 	int updateBP(std::vector<double>);
 	int train(std::vector<double>, std::vector<double>, double);
-	int trainBP(std::vector<double>, std::vector<double>, double);
+	int train();
+	int setDelta(std::vector<double>, double, double);				//last layer
+	int setDelta(std::vector<double>, std::vector<double>, double, double);
 };

@@ -4,7 +4,7 @@ layer::layer(int in, int out) {
 	input.resize(in);
 	output.resize(out);
 	weight.resize(in*out);
-	delta.resize(in*out);
+	delta.resize(out);
 	dweight.resize(in*out);
 	for (int c=0; c<weight.size(); c++) {
 		weight[c] = .0;//rand() % 201 -100;		//-100 < w23 < +100
@@ -17,12 +17,34 @@ int layer::setSize(int in, int out) {
 	input.resize(in);
 	output.resize(out);
 	weight.resize(in*out);
-	delta.resize(in*out);
+	delta.resize(out);
 	dweight.resize(in*out);
 	for (int c=0; c<weight.size(); c++) {
 		weight[c] = 0;
 		delta[c] = .0;
 		dweight[c] = .0;
+	}
+	return 0;
+}
+
+int layer::getWeight(std::vector<double> w) {
+	if (w.size() < weight.size())	w.resize(weight.size());
+	for (int c=0; c<weight.size(); c++) {
+		w[c] = weight[c];
+	}
+	return 0;
+}
+int layer::getDelta(std::vector<double> d) {
+	if (d.size() < delta.size())	d.resize(delta.size());
+	for (int c=0; c<delta.size(); c++) {
+		d[c] = delta[c];
+	}
+	return 0;
+}
+int layer::getOutput(std::vector<double> o) {
+	if (o.size() < output.size())	o.resize(output.size());
+	for (int c=0; c<output.size(); c++) {
+		o[c] = output[c];
 	}
 	return 0;
 }
@@ -103,23 +125,41 @@ int layer::train(std::vector<double> x, std::vector<double> y, double eta) {
 	return 0;
 }
 
-int layer::trainBP(std::vector<double> x, std::vector<double> y, double eta) {
-	double err = 0;
+
+int layer::setDelta(std::vector<double> y, double eta, double alp) {
+	if (y.size() == output.size())	return -1;
 	
-	std::cout<<"train: ";
-	if (x.size() != input.size())	return 0;
-	if (y.size() != output.size())	return 0;
-	
-	updateBP(x);
-	
-	std::cout<<" w: ";
 	for (int c=0; c<output.size(); c++) {
-		err = (y[c] - output[c]);
-		for (int d=0; d<input.size(); d++) {
-			weight[output.size()*c + d] = weight[output.size()*c + d] + err * input[d] * eta;
-			std::cout<<weight[output.size()*c + d]<<",";
+		delta[c] = (output[c] - y[c]) * output[c] * (1.0 - output[c]);
+		for (int e=0; e<input.size(); e++) {
+			dweight[output.size()*c + e] = -eta * delta[c] * input[e] + alp * dweight[output.size()*c + e];
+			//weight[output.size()*c + e] = weight[output.size()*c + e] + dweight[output.size()*c + e];
 		}
 	}
-	std::cout<<std::endl;
+	return 0;
+}
+
+int layer::setDelta(std::vector<double> w, std::vector<double> d,  double eta, double alp) {
+	for (int c=0; output.size(); c++) {
+		delta[c] = 0;
+		for (int e=0; e<d.size(); e++) {
+			delta[c] += w[output.size()*c + e] * d[e];
+		}
+		delta[c] *= output[c] * (1.0 - output[c]);
+		
+		for (int e=0; e<input.size(); e++) {
+			dweight[output.size()*c + e] = -eta * delta[c] * input[e] + alp * dweight[output.size()*c + e];
+			//weight[output.size()*c + e] = weight[output.size()*c + e] + dweight[output.size()*c + e];
+		}
+	}
+	return 0;
+}
+
+int layer::train() {
+	for (int c=0; output.size(); c++) {
+		for (int e=0; e<input.size(); e++) {
+			weight[output.size()*c + e] = weight[output.size()*c + e] + dweight[output.size()*c + e];
+		}
+	}
 	return 0;
 }

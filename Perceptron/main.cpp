@@ -5,9 +5,11 @@
 
 #define MAX_DATA_DIM	(12)
 #define TRAIN_DATA_SIZE (4)
+#define LAYER_SIZE		(2)
 #define VEC_DIM			(3)			//input + bias
 #define OUT_DIM			(1)
 #define ETA				(0.1)
+#define ALP				(0.1)
 
 int setTrainData(char fname[], int n, std::vector<double> &d) {
 	std::ifstream ifs(fname);
@@ -33,15 +35,24 @@ int setTrainData(char fname[], int n, std::vector<double> &d) {
 }
 
 int main() {
-	layer perceptron(VEC_DIM, OUT_DIM);
+	layer bpnetwork[LAYER_SIZE];
 	std::vector<double> buff_x;
 	std::vector<double> buff_y;
 	std::vector<double> x;
 	std::vector<double> y;
+	std::vector<double> out;
+	std::vector<double> result;
+	std::vector<double> w;
+	std::vector<double> del;
+	bpnetwork[0].setSize(VEC_DIM, OUT_DIM);
+	bpnetwork[1].setSize(OUT_DIM, OUT_DIM);
 	buff_x.resize(TRAIN_DATA_SIZE*MAX_DATA_DIM);
 	buff_y.resize(TRAIN_DATA_SIZE*MAX_DATA_DIM);
 	x.resize(VEC_DIM);
 	y.resize(OUT_DIM);
+	out.resize(OUT_DIM);
+	result.resize(OUT_DIM);
+	w.resize(OUT_DIM*OUT_DIM);
 	setTrainData("train_data_x.txt", TRAIN_DATA_SIZE, buff_x);
 	setTrainData("train_data_y.txt", TRAIN_DATA_SIZE, buff_y);
 	
@@ -59,7 +70,22 @@ int main() {
 				y[e] = buff_y[MAX_DATA_DIM*d + e];
 				std::cout<<y[e]<<",";
 			}
-			perceptron.trainBP(x, y, ETA);
+			//update
+			bpnetwork[0].updateBP(x);
+			bpnetwork[0].getOutput(out);
+			bpnetwork[1].updateBP(out);
+			bpnetwork[1].getOutput(result);
+			
+			//train
+			bpnetwork[LAYER_SIZE-1].setDelta(y, ETA, ALP);
+			for (int e=LAYER_SIZE-2; e>=0; e--) {
+				bpnetwork[e+1].getWeight(w);
+				bpnetwork[e+1].getDelta(del);
+				bpnetwork[e].setDelta(w, del, ETA, ALP);
+			}
+			for (int e=LAYER_SIZE-1; e>=0; e--) {
+				bpnetwork[e].train();
+			}
 		}
 	}
 	return 0;
