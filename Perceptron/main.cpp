@@ -8,8 +8,8 @@
 #define LAYER_SIZE		(2)
 #define VEC_DIM			(3)			//input + bias
 #define OUT_DIM			(1)
-#define ETA				(0.1)
-#define ALP				(0.1)
+#define ETA				(5)
+#define ALP				(0.01)
 
 int setTrainData(char fname[], int n, std::vector<double> &d) {
 	std::ifstream ifs(fname);
@@ -58,7 +58,7 @@ int main() {
 	
 	if (MAX_DATA_DIM < VEC_DIM)	return -1;
 	
-	for (int c=0; c<50; c++) {
+	for (int c=0; c<20; c++) {
 		for (int d=0; d<TRAIN_DATA_SIZE; d++) {
 			std::cout<<"x:";
 			for (int e=0; e<VEC_DIM; e++) {
@@ -76,16 +76,24 @@ int main() {
 			bpnetwork[1].updateBP(out);
 			bpnetwork[1].getOutput(result);
 			
+			
 			//train
 			bpnetwork[LAYER_SIZE-1].setDelta(y, ETA, ALP);
+			bpnetwork[LAYER_SIZE-1].getWeight(w);
+			bpnetwork[LAYER_SIZE-1].getDelta(del);
+			bpnetwork[0].setDelta(w, del, ETA, ALP);
+			/*
 			for (int e=LAYER_SIZE-2; e>=0; e--) {
 				bpnetwork[e+1].getWeight(w);
 				bpnetwork[e+1].getDelta(del);
 				bpnetwork[e].setDelta(w, del, ETA, ALP);
 			}
-			for (int e=LAYER_SIZE-1; e>=0; e--) {
+			*/
+			for (int e=0; e<LAYER_SIZE; e++) {
+				std::cout<<"train"<<e;;
 				bpnetwork[e].train();
 			}
+			std::cout<<std::endl;
 		}
 	}
 	return 0;

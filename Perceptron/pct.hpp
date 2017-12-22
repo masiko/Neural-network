@@ -15,9 +15,9 @@ public:
 	layer(int,int);
 	int setSize(int,int);
 	
-	int getWeight(std::vector<double>);
-	int getDelta(std::vector<double>);
-	int getOutput(std::vector<double>);
+	int getWeight(std::vector<double>&);
+	int getDelta(std::vector<double>&);
+	int getOutput(std::vector<double>&);
 	
 	double step(double);
 	double sigmoid(double);
